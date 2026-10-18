@@ -16,15 +16,35 @@ const getComments = async (req, res) => {
 
 const getUserComments = async (req, res) => {
     try {
-        const { userId } = req.user
-        const userComments = await Comment.find({ userId });
-        req.status(200).json({
+        const { id } = req.user
+        const userComments = await Comment.find({ userId: id });
+        res.status(200).json({
             message: "User Comments",
             userComments
         })
     } catch (error) {
         res.status(500).json({
             message: error
+        })
+    }
+}
+
+const getPostComments = async (req, res) => {
+    try {
+        const { postId } = req.params;
+        const comments = await Comment.find({ postId });
+        if (comments.length === 0) {
+            return res.status(404).json({
+                message: "No Comment Found"
+            })
+        }
+        res.status(200).json({
+            message: "Post Comments",
+            comments
+        })
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
         })
     }
 }
@@ -122,5 +142,6 @@ const editComment = async (req, res) => {
 module.exports = {
     getComments, writeComment,
     deleteComment, editComment,
-    getUserComments, getCommentById
+    getUserComments, getCommentById,
+    getPostComments
 }
