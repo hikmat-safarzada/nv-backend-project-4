@@ -78,26 +78,48 @@ const deletePost = async (req, res) => {
 const updatePost = async (req, res) => {
     try {
         const { postId } = req.params;
-        const post = await Post.findOne({_id: postId})
+
+        const post = await Post.findOne({ _id: postId });
+
+        // 1. Post mövcudluğunu yoxlayırıq
+        if (!post) {
+            return res.status(404).json({
+                message: "Post not found"
+            });
+        }
+
         const allowedFields = [
-            "title", "content",
-            "category", "status"
-        ]
+            "title",
+            "content",
+            "category",
+            "status"
+        ];
+
+        // 2. req.body yoxdursa, boş obyekt istifadə edirik
+        const body = req.body || {};
+
         const updated = Object.fromEntries(
-            Object.entries(req.body).filter(([key]) => allowedFields.includes(key))
-        )
+            Object.entries(body).filter(([key]) =>
+                allowedFields.includes(key)
+            )
+        );
+
+        // 3. Yenilənəcək məlumatları tətbiq edirik
         Object.assign(post, updated);
+
         await post.save();
-        res.status(201).json({
+
+        return res.status(200).json({
             message: "Post updated successfully",
             post
-        })
+        });
+
     } catch (error) {
-        res.status(500).json({
+        return res.status(500).json({
             message: error.message
-        })
+        });
     }
-}
+};
 
 const getUserPosts = async (req, res) => {
     try {
