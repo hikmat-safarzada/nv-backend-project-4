@@ -11,7 +11,7 @@ router.get("/posts/:postId", verifyToken, getPostComments);
 router.get("/:commentId", verifyToken, getCommentById);
 
 router.post("/", verifyToken, validate(commentValidate), writeComment);
-router.patch("/:commentId", verifyToken, editComment);
+router.put("/:commentId", verifyToken, editComment);
 router.delete("/:id", verifyToken, deleteComment);
 
 module.exports = router
